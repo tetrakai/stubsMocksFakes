@@ -1,0 +1,36 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  id            Int                   @id
+  provider      String
+  greenPower    GreenPowerSurcharge?  @relation(fields: [greenPowerId], references: [id])
+  greenPowerId  Int
+  createdAt     DateTime              @default(now())
+}
+
+model TariffRates {
+  id          Int       @id
+  account     Account   @relation(fields: [accountId], references: [id])
+  accountId   Int
+  type        String
+  ratePerMin  Int
+  startDate   Date
+  endDate     Date
+}
+
+model GreenPowerSurcharge {
+  id            Int       @id
+  percInc       Int
+  account       Account   @relation(fields: [accountId], references: [id])
+  accountId     Int
+  onlyOnTariffs String[]?
+  startDate     Date
+  endDate       Date
+}
